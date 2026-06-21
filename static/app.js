@@ -7,6 +7,8 @@ let selectedRelease = null;
 const btnRefresh = document.getElementById('btn-refresh');
 const refreshIcon = document.getElementById('refresh-icon');
 const btnExportCsv = document.getElementById('btn-export-csv');
+const btnThemeToggle = document.getElementById('btn-theme-toggle');
+const themeIcon = document.getElementById('theme-icon');
 const inputSearch = document.getElementById('input-search');
 const releasesList = document.getElementById('releases-list');
 const countBadge = document.getElementById('releases-count');
@@ -22,14 +24,42 @@ const btnShareTwitter = document.getElementById('btn-share-twitter');
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
+    // Carrega o tema salvo no localStorage
+    initTheme();
+    
     fetchReleases();
 
     // Event listeners
     btnRefresh.addEventListener('click', fetchReleases);
     btnExportCsv.addEventListener('click', exportToCsv);
+    btnThemeToggle.addEventListener('click', toggleTheme);
     inputSearch.addEventListener('input', handleSearch);
     btnShareTwitter.addEventListener('click', shareOnTwitter);
 });
+
+// Inicializa o tema padrão do usuário
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-theme');
+        themeIcon.className = 'fa-solid fa-sun';
+    } else {
+        document.body.classList.remove('light-theme');
+        themeIcon.className = 'fa-solid fa-moon';
+    }
+}
+
+// Alterna entre os temas claro e escuro
+function toggleTheme() {
+    const isLight = document.body.classList.toggle('light-theme');
+    if (isLight) {
+        localStorage.setItem('theme', 'light');
+        themeIcon.className = 'fa-solid fa-sun';
+    } else {
+        localStorage.setItem('theme', 'dark');
+        themeIcon.className = 'fa-solid fa-moon';
+    }
+}
 
 // Busca as notas de versão do backend
 async function fetchReleases() {
