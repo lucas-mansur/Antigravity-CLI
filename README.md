@@ -22,16 +22,18 @@ Este projeto foi construído usando **Python + Flask** no backend e uma interfac
 
 ```text
 agy-cli-projects/
-├── .venv/                 # Ambiente virtual do Python (ignorado pelo Git)
+├── .venv/                        # Ambiente virtual do Python (ignorado pelo Git)
 ├── static/
-│   ├── app.js             # Lógica do frontend (requisições, busca, temas, cópia e CSV)
-│   └── style.css          # Design visual, variáveis de temas e responsividade
+│   ├── app.js                    # Lógica do frontend (requisições, busca, temas, cópia e CSV)
+│   └── style.css                 # Design visual, variáveis de temas e responsividade
 ├── templates/
-│   └── index.html         # Página única da aplicação
-├── .gitignore             # Arquivos ignorados pelo Git
-├── app.py                 # Arquivo principal do servidor Flask
-├── README.md              # Documentação do projeto
-└── requirements.txt       # Dependências do Python
+│   └── index.html                # Página única da aplicação
+├── .gitignore                    # Arquivos ignorados pelo Git
+├── app.py                        # Arquivo principal do servidor Flask
+├── code_review_devsecops.md      # Relatório de Code Review (Segurança, Performance, etc.)
+├── README.md                     # Documentação do projeto
+├── requirements.txt              # Dependências do Python
+└── ux_roadmap.md                 # Roadmap de melhorias de UX (✅ concluído)
 ```
 
 ---
@@ -154,6 +156,22 @@ Para balancear o uso das cotas de uso do seu agente de IA ou utilizar modelos es
     ```json
     "model": "claude-3-5-sonnet"
     ```
+
+## 🔍 Code Review (DevSecOps)
+
+O projeto passou por uma **revisão completa de código** seguindo a metodologia _Full-Cycle DevSecOps & Code Quality Review_, cobrindo 5 dimensões:
+
+| Dimensão | Foco |
+|---|---|
+| 🛡️ **Security First** | XSS, exposição de stack trace, debug mode |
+| 🏗️ **Architecture** | Timeout de conexões, gestão de dependências |
+| ✅ **Correctness** | Edge cases, memory leaks, lógica de DOM |
+| ⚡ **Performance** | Parsing desnecessário, cache de dados |
+| 🎨 **Style** | Modularização, escopo, código morto |
+
+> **12 achados** (1 crítica, 3 alta, 3 média, 2 baixa, 3 sugestão) — cada um com código refatorado pronto.
+
+📄 **Relatório completo:** [`code_review_devsecops.md`](code_review_devsecops.md)
 
 ---
 
