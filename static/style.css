@@ -524,9 +524,8 @@ body {
     margin-top: 0;
 }
 
-/* Estilo específico para títulos de categoria */
-.detail-body-content h3:has(text):contains("Feature")::before { background-color: var(--color-feature); }
-.detail-body-content h3:has(text):contains("Announcement")::before { background-color: var(--color-announcement); }
+/* Nota: coloração por categoria via ::before usa a cor padrão --accent-purple.
+   Para personalizar por tipo, adicionar classes via JS no futuro. */
 
 .detail-body-content p {
     margin-bottom: 16px;

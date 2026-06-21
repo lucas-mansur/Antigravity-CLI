@@ -14,7 +14,7 @@ def fetch_release_notes():
         url, 
         headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'}
     )
-    with urllib.request.urlopen(req) as response:
+    with urllib.request.urlopen(req, timeout=15) as response:
         xml_data = response.read()
     
     root = ET.fromstring(xml_data)
@@ -49,8 +49,13 @@ def get_releases():
         releases = fetch_release_notes()
         return jsonify({'status': 'success', 'data': releases})
     except Exception as e:
-        return jsonify({'status': 'error', 'message': str(e)}), 500
+        app.logger.error(f"Falha ao buscar release notes: {e}", exc_info=True)
+        return jsonify({
+            'status': 'error',
+            'message': 'Não foi possível obter as notas de versão. Tente novamente em instantes.'
+        }), 500
 
 if __name__ == '__main__':
-    # Usar porta 5000 por padrão
-    app.run(debug=True, host='127.0.0.1', port=5000)
+    # Em desenvolvimento, use: set FLASK_DEBUG=1 && python app.py
+    debug_mode = os.environ.get('FLASK_DEBUG', '0') == '1'
+    app.run(debug=debug_mode, host='127.0.0.1', port=5000)

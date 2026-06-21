@@ -8,6 +8,15 @@ let currentCategory = 'all';
 let keyboardFocusIndex = -1; // índice do card com foco pelo teclado
 
 // ============================================================
+// Utilitário de Segurança — Escape de HTML (Anti-XSS)
+// ============================================================
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+}
+
+// ============================================================
 // Elementos do DOM
 // ============================================================
 const btnRefresh = document.getElementById('btn-refresh');
@@ -174,7 +183,7 @@ function showToast(message, type = 'success') {
     const iconClass = type === 'success'
         ? 'fa-solid fa-circle-check success-icon'
         : 'fa-solid fa-circle-xmark error-icon';
-    toast.innerHTML = `<i class="${iconClass}"></i><span>${message}</span>`;
+    toast.innerHTML = `<i class="${iconClass}"></i><span>${escapeHtml(message)}</span>`;
     toastContainer.appendChild(toast);
     setTimeout(() => {
         toast.classList.add('fade-out');
@@ -236,7 +245,16 @@ async function fetchReleases() {
         const result = await response.json();
 
         if (result.status === 'success') {
-            allReleases = result.data;
+            // Item 8: Cachear texto limpo e tags uma única vez (performance)
+            allReleases = result.data.map(release => {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = release.content;
+                return {
+                    ...release,
+                    _cleanText: (tempDiv.textContent || '').toLowerCase(),
+                    _tags: detectTags(release.content)
+                };
+            });
             const previouslySelectedId = selectedRelease ? selectedRelease.id : null;
             filterAndRender();
 
@@ -286,14 +304,13 @@ function filterAndRender() {
     const query = inputSearch.value.toLowerCase().trim();
 
     filteredReleases = allReleases.filter(release => {
-        const tags = detectTags(release.content).map(t => t.toLowerCase());
+        // Usa dados cacheados (_tags, _cleanText) para evitar parsing DOM repetitivo
+        const tags = (release._tags || detectTags(release.content)).map(t => t.toLowerCase());
         const categoryMatch = currentCategory === 'all' || tags.includes(currentCategory);
 
         const titleMatch = release.title.toLowerCase().includes(query);
         const tagMatch = tags.join(' ').includes(query);
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = release.content;
-        const contentMatch = tempDiv.textContent.toLowerCase().includes(query);
+        const contentMatch = (release._cleanText || '').includes(query);
         const searchMatch = !query || titleMatch || tagMatch || contentMatch;
 
         return categoryMatch && searchMatch;
@@ -431,6 +448,7 @@ function exportToCsv() {
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
+    URL.revokeObjectURL(url); // Item 6: Libera referência em memória (memory leak fix)
     showToast("Arquivo CSV baixado!", "success");
 }
 
@@ -475,17 +493,37 @@ function selectRelease(release, cardElement) {
         detailOriginalLink.style.display = 'none';
     }
 
-    // 6. Search Highlighter no painel de detalhes
+    // Insere o conteúdo HTML primeiro, depois aplica highlight via TreeWalker (Item 7)
+    detailBody.innerHTML = release.content;
+
     if (query) {
-        const highlighted = highlightText(release.content, query);
-        detailBody.innerHTML = highlighted;
-    } else {
-        detailBody.innerHTML = release.content;
+        highlightTextNodes(detailBody, query);
     }
 
     detailBody.querySelectorAll('a').forEach(link => {
         link.setAttribute('target', '_blank');
         link.setAttribute('rel', 'noopener noreferrer');
+    });
+}
+
+// Item 7: Aplica highlight apenas em nós de texto (nunca em atributos HTML)
+function highlightTextNodes(element, query) {
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp(`(${escaped})`, 'gi');
+    const nodesToReplace = [];
+
+    while (walker.nextNode()) {
+        regex.lastIndex = 0;
+        if (regex.test(walker.currentNode.textContent)) {
+            nodesToReplace.push(walker.currentNode);
+        }
+    }
+
+    nodesToReplace.forEach(node => {
+        const span = document.createElement('span');
+        span.innerHTML = node.textContent.replace(regex, '<mark class="search-highlight">$1</mark>');
+        node.parentNode.replaceChild(span, node);
     });
 }
 
@@ -498,15 +536,13 @@ function showEmptyState(message, showRetry = false) {
     detailsContent.classList.add('hidden');
     detailsPlaceholder.classList.remove('hidden');
 
-    const placeholderTitle = detailsPlaceholder.querySelector('h3');
-    const placeholderText = detailsPlaceholder.querySelector('p');
-
     if (showRetry) {
+        // Item 1 + 5: Escapa a mensagem (anti-XSS) e usa innerHTML seguro
         detailsPlaceholder.innerHTML = `
             <div class="error-state">
                 <i class="fa-solid fa-triangle-exclamation error-state-icon"></i>
                 <h4>Falha ao carregar as notas</h4>
-                <p>${message}</p>
+                <p>${escapeHtml(message)}</p>
                 <button class="btn-retry" id="btn-retry-fetch">
                     <i class="fa-solid fa-rotate-right"></i>
                     Tentar Novamente
@@ -514,8 +550,16 @@ function showEmptyState(message, showRetry = false) {
             </div>`;
         document.getElementById('btn-retry-fetch').addEventListener('click', fetchReleases);
     } else {
-        placeholderTitle.textContent = "Nenhum resultado";
-        placeholderText.textContent = message;
+        // Item 5: Restaura a estrutura HTML original do placeholder
+        detailsPlaceholder.innerHTML = `
+            <div class="placeholder-icon">
+                <i class="fa-solid fa-arrow-left-long"></i>
+                <i class="fa-solid fa-book-open"></i>
+            </div>
+            <h3></h3>
+            <p></p>`;
+        detailsPlaceholder.querySelector('h3').textContent = "Nenhum resultado";
+        detailsPlaceholder.querySelector('p').textContent = message;
     }
 }
 
