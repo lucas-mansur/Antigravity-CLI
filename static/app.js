@@ -2,6 +2,7 @@
 let allReleases = [];
 let filteredReleases = []; // Guarda a lista que está sendo exibida no momento
 let selectedRelease = null;
+let currentCategory = 'all'; // Categoria ativa de filtro rápido
 
 // Elementos do DOM
 const btnRefresh = document.getElementById('btn-refresh');
@@ -12,6 +13,8 @@ const themeIcon = document.getElementById('theme-icon');
 const inputSearch = document.getElementById('input-search');
 const releasesList = document.getElementById('releases-list');
 const countBadge = document.getElementById('releases-count');
+const categoryFiltersContainer = document.getElementById('category-filters');
+const toastContainer = document.getElementById('toast-container');
 
 // Elementos de Detalhes
 const detailsPlaceholder = document.getElementById('details-placeholder');
@@ -21,6 +24,8 @@ const detailOriginalLink = document.getElementById('detail-original-link');
 const detailTitle = document.getElementById('detail-title');
 const detailBody = document.getElementById('detail-body');
 const btnShareTwitter = document.getElementById('btn-share-twitter');
+const btnToggleExpand = document.getElementById('btn-toggle-expand');
+const mainContentGrid = document.querySelector('.app-main-content');
 
 // Inicialização
 document.addEventListener('DOMContentLoaded', () => {
@@ -29,12 +34,16 @@ document.addEventListener('DOMContentLoaded', () => {
     
     fetchReleases();
 
-    // Event listeners
+    // Event listeners globais
     btnRefresh.addEventListener('click', fetchReleases);
     btnExportCsv.addEventListener('click', exportToCsv);
     btnThemeToggle.addEventListener('click', toggleTheme);
-    inputSearch.addEventListener('input', handleSearch);
+    inputSearch.addEventListener('input', () => filterAndRender());
     btnShareTwitter.addEventListener('click', shareOnTwitter);
+    btnToggleExpand.addEventListener('click', toggleReaderMode);
+
+    // Event listener para as Pills de Categorias
+    setupCategoryFilters();
 });
 
 // Inicializa o tema padrão do usuário
@@ -55,10 +64,64 @@ function toggleTheme() {
     if (isLight) {
         localStorage.setItem('theme', 'light');
         themeIcon.className = 'fa-solid fa-sun';
+        showToast("Modo Claro ativado", "success");
     } else {
         localStorage.setItem('theme', 'dark');
         themeIcon.className = 'fa-solid fa-moon';
+        showToast("Modo Escuro ativado", "success");
     }
+}
+
+// Configura os botões de pílula de categorias
+function setupCategoryFilters() {
+    const pills = categoryFiltersContainer.querySelectorAll('.filter-pill');
+    pills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            pills.forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            
+            currentCategory = pill.getAttribute('data-category');
+            filterAndRender();
+        });
+    });
+}
+
+// Alterna o visualizador para o Modo Leitura Focada (Reader Mode)
+function toggleReaderMode() {
+    const isReader = mainContentGrid.classList.toggle('reader-mode');
+    const icon = btnToggleExpand.querySelector('i');
+    
+    if (isReader) {
+        icon.className = 'fa-solid fa-compress';
+        btnToggleExpand.setAttribute('title', 'Recolher Leitura');
+        showToast("Modo de Foco ativado", "success");
+    } else {
+        icon.className = 'fa-solid fa-expand';
+        btnToggleExpand.setAttribute('title', 'Expandir Leitura');
+    }
+}
+
+// Exibe notificações Toast modernas na interface
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    
+    const iconClass = type === 'success' ? 'fa-solid fa-circle-check success-icon' : 'fa-solid fa-circle-xmark error-icon';
+    
+    toast.innerHTML = `
+        <i class="${iconClass}"></i>
+        <span>${message}</span>
+    `;
+    
+    toastContainer.appendChild(toast);
+    
+    // Animação de saída e remoção automática após 3 segundos
+    setTimeout(() => {
+        toast.classList.add('fade-out');
+        toast.addEventListener('animationend', () => {
+            toast.remove();
+        });
+    }, 3000);
 }
 
 // Busca as notas de versão do backend
@@ -67,28 +130,45 @@ async function fetchReleases() {
         setLoadingState(true);
         
         const response = await fetch('/api/releases');
-        if (!response.ok) throw new Error('Não foi possível carregar as notas de versão.');
+        if (!response.ok) throw new Error('Não foi possível conectar com o servidor do feed.');
         
         const result = await response.json();
         
         if (result.status === 'success') {
             allReleases = result.data;
-            filteredReleases = [...allReleases]; // Inicializa a lista filtrada com todos
-            renderReleases(filteredReleases);
             
-            // Seleciona automaticamente o primeiro lançamento por padrão
+            // Guarda qual estava selecionado antes de atualizar para manter o estado
+            const previouslySelectedId = selectedRelease ? selectedRelease.id : null;
+            
+            filterAndRender();
+            
+            // Tenta preservar a seleção do card após atualização
             if (filteredReleases.length > 0) {
-                const firstCard = releasesList.querySelector('.release-card');
-                selectRelease(filteredReleases[0], firstCard);
+                const stillExists = filteredReleases.find(r => previouslySelectedId && r.id === previouslySelectedId);
+                if (stillExists) {
+                    // Re-seleciona o mesmo card no DOM
+                    const cards = releasesList.querySelectorAll('.release-card');
+                    const index = filteredReleases.findIndex(r => r.id === previouslySelectedId);
+                    if (index !== -1 && cards[index]) {
+                        selectRelease(stillExists, cards[index]);
+                    }
+                } else {
+                    // Seleciona o primeiro
+                    const firstCard = releasesList.querySelector('.release-card');
+                    selectRelease(filteredReleases[0], firstCard);
+                }
             } else {
                 showEmptyState("Nenhuma nota de versão encontrada.");
             }
+            
+            showToast("Notas de versão atualizadas!", "success");
         } else {
-            throw new Error(result.message || 'Erro desconhecido ao carregar dados.');
+            throw new Error(result.message || 'Erro ao carregar dados.');
         }
     } catch (error) {
         console.error('Erro na requisição:', error);
         showEmptyState(`Erro: ${error.message}`);
+        showToast(error.message, "error");
     } finally {
         setLoadingState(false);
     }
@@ -112,6 +192,32 @@ function setLoadingState(isLoading) {
         btnRefresh.disabled = false;
         btnExportCsv.disabled = false;
     }
+}
+
+// Executa o filtro de buscas e de pílulas de categorias, e atualiza a interface
+function filterAndRender() {
+    const query = inputSearch.value.toLowerCase().trim();
+    
+    filteredReleases = allReleases.filter(release => {
+        // 1. Filtro de Categoria (Pill Tab)
+        const tags = detectTags(release.content).map(t => t.toLowerCase());
+        const categoryMatch = (currentCategory === 'all' || tags.includes(currentCategory));
+        
+        // 2. Filtro de Busca por Palavra-chave
+        const titleMatch = release.title.toLowerCase().includes(query);
+        const tagMatch = tags.join(' ').includes(query);
+        
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = release.content;
+        const textContent = tempDiv.textContent.toLowerCase();
+        const contentMatch = textContent.includes(query);
+        
+        const searchMatch = !query || titleMatch || tagMatch || contentMatch;
+        
+        return categoryMatch && searchMatch;
+    });
+    
+    renderReleases(filteredReleases);
 }
 
 // Renderiza a lista de cards
@@ -186,11 +292,14 @@ async function copyCardToClipboard(release, btnElement) {
 
         await navigator.clipboard.writeText(formattedText);
         
-        // Efeito visual de sucesso
+        // Efeito visual de sucesso no botão
         btnElement.classList.add('copied');
         const icon = btnElement.querySelector('i');
         icon.className = 'fa-solid fa-check';
         btnElement.setAttribute('title', 'Copiado!');
+        
+        // Exibe Toast dinâmico
+        showToast("Nota de versão copiada!", "success");
         
         // Reseta o estado após 1.5s
         setTimeout(() => {
@@ -201,14 +310,14 @@ async function copyCardToClipboard(release, btnElement) {
         
     } catch (err) {
         console.error('Falha ao copiar:', err);
-        alert('Não foi possível copiar o conteúdo para a área de transferência.');
+        showToast('Não foi possível copiar para a área de transferência.', 'error');
     }
 }
 
 // Exporta as notas de versão exibidas no momento na tela para arquivo CSV
 function exportToCsv() {
     if (filteredReleases.length === 0) {
-        alert("Não há notas de versão para exportar.");
+        showToast("Não há notas de versão para exportar.", "error");
         return;
     }
 
@@ -242,6 +351,8 @@ function exportToCsv() {
     document.body.appendChild(downloadLink);
     downloadLink.click();
     document.body.removeChild(downloadLink);
+
+    showToast("Arquivo CSV baixado!", "success");
 }
 
 // Detecta palavras-chave/categorias baseadas nas tags do BigQuery
@@ -300,57 +411,6 @@ function selectRelease(release, cardElement) {
         link.setAttribute('target', '_blank');
         link.setAttribute('rel', 'noopener noreferrer');
     });
-}
-
-// Filtra a lista com base no termo digitado
-function handleSearch(event) {
-    const query = event.target.value.toLowerCase().trim();
-    
-    if (!query) {
-        filteredReleases = [...allReleases];
-        renderReleases(filteredReleases);
-        return;
-    }
-
-    filteredReleases = allReleases.filter(release => {
-        const titleMatch = release.title.toLowerCase().includes(query);
-        const tags = detectTags(release.content).join(' ').toLowerCase();
-        const tagMatch = tags.includes(query);
-        
-        // Remove tags HTML para buscar apenas no texto limpo
-        const tempDiv = document.createElement('div');
-        tempDiv.innerHTML = release.content;
-        const textContent = tempDiv.textContent.toLowerCase();
-        const contentMatch = textContent.includes(query);
-        
-        return titleMatch || tagMatch || contentMatch;
-    });
-
-    renderReleases(filteredReleases);
-}
-
-// Compartilha a nota de versão ativa no X (Twitter)
-function shareOnTwitter() {
-    if (!selectedRelease) return;
-
-    // Converte o HTML em texto limpo para obter um resumo curto
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = selectedRelease.content;
-    let cleanText = tempDiv.textContent || tempDiv.innerText || '';
-    
-    // Trunca o texto se for muito longo
-    const maxLength = 140;
-    if (cleanText.length > maxLength) {
-        cleanText = cleanText.substring(0, maxLength) + '...';
-    }
-
-    const textToShare = `Confira a novidade do Google BigQuery (${selectedRelease.title}):\n"${cleanText}"\n\n#BigQuery #GoogleCloud #DataEngineering`;
-    const shareUrl = selectedRelease.link || 'https://docs.cloud.google.com/bigquery/docs/release-notes';
-
-    const twitterIntentUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(textToShare)}&url=${encodeURIComponent(shareUrl)}`;
-    
-    // Abre janela de compartilhamento
-    window.open(twitterIntentUrl, '_blank', 'width=550,height=420,toolbar=0,menubar=0,location=0,status=0');
 }
 
 // Exibe estado vazio na direita em caso de erro ou sem dados

@@ -59,6 +59,15 @@
                     </div>
                 </div>
 
+                <div class="category-filters" id="category-filters">
+                    <button class="filter-pill active" data-category="all">Todas</button>
+                    <button class="filter-pill" data-category="feature">Features</button>
+                    <button class="filter-pill" data-category="announcement">Announcements</button>
+                    <button class="filter-pill" data-category="change">Changes</button>
+                    <button class="filter-pill" data-category="issue">Issues</button>
+                    <button class="filter-pill" data-category="breaking">Breaking</button>
+                </div>
+
                 <div id="releases-list" class="cards-container">
                     <!-- Skeletons de Carregamento -->
                     <div class="skeleton-card"></div>
@@ -82,9 +91,14 @@
                     <div class="details-header">
                         <div class="details-meta">
                             <span id="detail-date" class="detail-date-badge">Data</span>
-                            <a id="detail-original-link" href="#" target="_blank" rel="noopener noreferrer" class="external-link" title="Ver documentação oficial">
-                                Documentação Oficial <i class="fa-solid fa-up-right-from-square"></i>
-                            </a>
+                            <div class="meta-right">
+                                <a id="detail-original-link" href="#" target="_blank" rel="noopener noreferrer" class="external-link" title="Ver documentação oficial">
+                                    Documentação Oficial <i class="fa-solid fa-up-right-from-square"></i>
+                                </a>
+                                <button id="btn-toggle-expand" class="btn-icon-only" title="Expandir/Recolher Leitura">
+                                    <i class="fa-solid fa-expand"></i>
+                                </button>
+                            </div>
                         </div>
                         <h2 id="detail-title" class="detail-title-text">Título da Nota</h2>
                     </div>
@@ -106,6 +120,9 @@
             </section>
         </main>
     </div>
+
+    <!-- Container para Notificações Toast -->
+    <div id="toast-container" class="toast-container"></div>
 
     <!-- Script principal da aplicação -->
     <script src="{{ url_for('static', filename='app.js') }}"></script>

@@ -924,3 +924,173 @@ body.light-theme .btn-share:hover {
     background-color: var(--bg-secondary);
     border-color: rgba(0, 0, 0, 0.2);
 }
+
+/* ==========================================================================
+   Novos Recursos de UX (Roadmap)
+   ========================================================================== */
+
+/* Filtros Rápidos por Categoria (Pill Tabs) */
+.category-filters {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+body.light-theme .category-filters {
+    border-bottom-color: rgba(0, 0, 0, 0.05);
+}
+
+.filter-pill {
+    background-color: var(--bg-tertiary);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    color: var(--text-secondary);
+    padding: 6px 12px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-normal);
+}
+
+body.light-theme .filter-pill {
+    border-color: rgba(0, 0, 0, 0.06);
+}
+
+.filter-pill:hover {
+    color: var(--text-primary);
+    border-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+body.light-theme .filter-pill:hover {
+    border-color: rgba(0, 0, 0, 0.15);
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.filter-pill.active {
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.2);
+}
+
+/* Modo Leitura Expandida (Reader Mode) */
+.meta-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.btn-icon-only {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--border-radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    transition: var(--transition-normal);
+}
+
+.btn-icon-only:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-tertiary);
+}
+
+/* Animação de colapso de coluna da lista de atualizações */
+.app-main-content {
+    transition: grid-template-columns 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.app-main-content.reader-mode {
+    grid-template-columns: 0px 1fr;
+    gap: 0;
+}
+
+.app-main-content.reader-mode .list-section {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-30px);
+    pointer-events: none;
+    padding: 0;
+    width: 0;
+    border: none;
+}
+
+.list-section {
+    transition: opacity 0.35s ease, transform 0.35s ease, padding 0.35s ease, border-color 0.35s ease;
+}
+
+/* Notificações Toast Personalizadas */
+.toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 9999;
+}
+
+.toast {
+    background-color: rgba(17, 24, 39, 0.9);
+    backdrop-filter: blur(10px);
+    color: var(--text-primary);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: var(--border-radius-md);
+    padding: 12px 20px;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    min-width: 280px;
+    max-width: 400px;
+    transform: translateY(20px);
+    opacity: 0;
+    animation: toast-in 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+body.light-theme .toast {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-color: rgba(59, 130, 246, 0.2);
+    color: var(--text-primary);
+}
+
+.toast.error {
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.toast i.success-icon {
+    color: var(--color-feature);
+}
+
+.toast i.error-icon {
+    color: var(--color-issue);
+}
+
+@keyframes toast-in {
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.toast.fade-out {
+    animation: toast-out 0.3s ease forwards;
+}
+
+@keyframes toast-out {
+    to {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+}

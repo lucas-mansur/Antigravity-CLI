@@ -129,6 +129,28 @@ Abra seu navegador e acesse:
 
 ---
 
+## ⚙️ Alternância de Modelos & Gestão de Cotas
+
+Para balancear o uso das cotas de uso do seu agente de IA ou utilizar modelos específicos de sua preferência (como Claude Sonnet ou versões avançadas do Gemini), você pode configurar o modelo ativo de três formas:
+
+1.  **Ao iniciar a CLI (via Terminal):**
+    Use a flag `--model` seguida do identificador do modelo:
+    ```bash
+    agy --model claude-3-5-sonnet
+    ```
+2.  **Durante uma sessão ativa do Antigravity CLI:**
+    Digite o comando `/model` no chat para abrir o seletor interativo e escolher o modelo de sua preferência:
+    ```bash
+    /model
+    ```
+3.  **Configuração Padrão no `settings.json`:**
+    Para definir permanentemente seu modelo favorito como padrão em todas as sessões, edite seu arquivo `~/.gemini/antigravity-cli/settings.json` e altere a chave `"model"`:
+    ```json
+    "model": "claude-3-5-sonnet"
+    ```
+
+---
+
 ## 🌟 Mensagem do Antigravity
 
 Parabéns por dar este passo e desvendar novas tecnologias! Aprender a estruturar uma aplicação web completa (integrando backend em Python com APIs e frontends assíncronos) é um marco excelente para qualquer profissional de tecnologia. 
