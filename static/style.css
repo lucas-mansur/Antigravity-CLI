@@ -1094,3 +1094,145 @@ body.light-theme .toast {
         opacity: 0;
     }
 }
+
+/* ==========================================================================
+   Navegação por Teclado — Foco Visível nos Cards
+   ========================================================================== */
+.release-card:focus {
+    outline: 2px solid var(--accent-blue);
+    outline-offset: 2px;
+}
+
+.release-card.keyboard-focus {
+    outline: 2px solid var(--accent-blue);
+    outline-offset: 2px;
+    background-color: rgba(59, 130, 246, 0.05);
+}
+
+/* ==========================================================================
+   Destaque de Palavras-Chave (Search Highlighter)
+   ========================================================================== */
+mark.search-highlight {
+    background-color: rgba(251, 191, 36, 0.35);
+    color: inherit;
+    border-radius: 2px;
+    padding: 0 1px;
+    font-weight: 700;
+}
+
+body.light-theme mark.search-highlight {
+    background-color: rgba(251, 191, 36, 0.55);
+}
+
+/* ==========================================================================
+   Retry Button — Estado de Erro com Ação
+   ========================================================================== */
+.error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    height: 100%;
+    gap: 12px;
+}
+
+.error-state-icon {
+    font-size: 2.5rem;
+    color: var(--color-issue);
+    opacity: 0.8;
+}
+
+.error-state h4 {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.error-state p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    max-width: 280px;
+    line-height: 1.5;
+}
+
+.btn-retry {
+    background: linear-gradient(135deg, var(--color-issue), #b91c1c);
+    border: none;
+    border-radius: var(--border-radius-md);
+    color: #ffffff;
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 10px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    transition: var(--transition-normal);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+}
+
+.btn-retry:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+}
+
+/* ==========================================================================
+   Tooltips Personalizados
+   ========================================================================== */
+[data-tooltip] {
+    position: relative;
+}
+
+[data-tooltip]::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) scale(0.9);
+    background-color: rgba(17, 24, 39, 0.95);
+    color: #f3f4f6;
+    font-size: 0.72rem;
+    font-weight: 500;
+    white-space: nowrap;
+    padding: 5px 10px;
+    border-radius: 6px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+[data-tooltip]::before {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: rgba(17, 24, 39, 0.95);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.18s ease;
+    z-index: 100;
+}
+
+[data-tooltip]:hover::after,
+[data-tooltip]:hover::before {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+
+body.light-theme [data-tooltip]::after {
+    background-color: rgba(31, 41, 55, 0.97);
+}
+
+body.light-theme [data-tooltip]::before {
+    border-top-color: rgba(31, 41, 55, 0.97);
+}
+

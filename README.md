@@ -121,11 +121,17 @@ Abra seu navegador e acesse:
 1.  **Sincronização Direta:** O botão **Atualizar** faz uma requisição em tempo real para o feed oficial da Google e atualiza a interface instantaneamente.
 2.  **Visualizador com Skeleton Loading:** Transição suave com carregamento simulado enquanto os dados são obtidos da API.
 3.  **Filtro Inteligente:** Digite palavras-chave no campo de busca para pesquisar no título, na categoria ou no conteúdo dos lançamentos.
-4.  **Extração de Categorias:** A aplicação analisa o conteúdo XML e categoriza automaticamente as notas em tags visuais como `Feature`, `Announcement`, `Change`, `Issue` ou `Breaking`.
-5.  **Cópia Rápida para a Área de Trabalho:** Botão dedicado em cada card que copia o texto limpo da nota (Data, Categorias, Links e Novidades) em formato estruturado, sem interferir na navegação do usuário e fornecendo feedback visual de sucesso ("Copiado!").
-6.  **Exportação para CSV:** Exporte com um clique toda a lista exibida no momento na tela (respeitando qualquer filtro de busca aplicado) para um arquivo CSV. Inclui codificação UTF-8 com BOM para compatibilidade imediata com caracteres especiais no Microsoft Excel.
-7.  **Alternador de Temas (Light / Dark Mode):** Botão de troca rápida no cabeçalho. As cores mudam por meio de transições suaves de CSS3 e a preferência do usuário é gravada de maneira persistente usando o `localStorage` do navegador.
-8.  **Compartilhe no X (Twitter):** Selecione uma atualização, clique em "Compartilhar no X" e publique instantaneamente um tweet contendo o resumo e o link oficial da documentação.
+4.  **Destaque de Palavras-Chave (Search Highlighter):** As ocorrências do termo pesquisado são destacadas visualmente com fundo amarelo tanto nos cards da lista quanto no painel de detalhes.
+5.  **Extração de Categorias:** A aplicação analisa o conteúdo XML e categoriza automaticamente as notas em tags visuais como `Feature`, `Announcement`, `Change`, `Issue` ou `Breaking`.
+6.  **Filtros Rápidos por Categoria (Pills):** Botões de filtro rápido abaixo da busca permitem filtrar instantaneamente por tipo de alteração com um clique.
+7.  **Navegação por Teclado:** Navegue pelos cards com as setas **↑** e **↓**, confirme a seleção com **Enter** e limpe a busca com **Esc**.
+8.  **Cópia Rápida para a Área de Trabalho:** Botão dedicado em cada card que copia o texto limpo da nota (Data, Categorias, Links e Novidades) em formato estruturado, com feedback visual de sucesso ("Copiado!").
+9.  **Exportação para CSV:** Exporte com um clique toda a lista exibida no momento na tela para um arquivo CSV com codificação UTF-8 com BOM para compatibilidade imediata com o Microsoft Excel.
+10. **Alternador de Temas (Light / Dark Mode):** Botão de troca rápida no cabeçalho com transições suaves de CSS3 e preferência persistida via `localStorage`.
+11. **Modo de Leitura Focada (Reader Mode):** Botão de expandir no visualizador de detalhes que recolhe a lista lateral para leitura em tela cheia.
+12. **Tooltips Personalizados:** Dicas de ajuda animadas aparecem ao passar o mouse sobre os botões e tags, explicando cada funcionalidade para novos usuários.
+13. **Botão "Tentar Novamente" (Retry):** Em caso de falha de conexão ou erro no feed, um estado de erro amigável com botão dedicado é exibido para o usuário tentar novamente.
+14. **Compartilhe no X (Twitter):** Selecione uma atualização, clique em "Compartilhar no X" e publique instantaneamente um tweet com o resumo e link oficial.
 
 ---
 

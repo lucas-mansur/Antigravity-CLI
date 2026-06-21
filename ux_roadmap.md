@@ -1,6 +1,6 @@
 # 📐 Avaliação de Experiência do Usuário (UX) & Roadmap de Melhorias
 
-Este documento apresenta uma análise da usabilidade da aplicação **BigQuery Release Notes Tracker** sob a perspectiva de UX, juntamente com um catálogo de ideias de melhorias futuras para aprimorar a experiência do usuário.
+Este documento apresenta uma análise da usabilidade da aplicação **BigQuery Release Notes Tracker** sob a perspectiva de UX, juntamente com o catálogo de melhorias que foram propostas e implementadas ao longo do desenvolvimento.
 
 ---
 
@@ -15,30 +15,40 @@ Este documento apresenta uma análise da usabilidade da aplicação **BigQuery R
 
 ---
 
-## 🗺️ Roadmap de Melhorias Propostas
-
-Estas são as sugestões de evolução recomendadas para o projeto, organizadas por categorias.
+## 🗺️ Roadmap de Melhorias
 
 ### 1. 🚀 Usabilidade & Facilidade de Uso
-*   **Filtros Rápidos por Categoria (Pill Tabs):**
-    *   Adicionar botões clicáveis no topo da lista (ex: "Todas", "Features", "Breaking", "Issues") para filtrar instantaneamente por tags com um clique, sem precisar digitar no campo de busca.
-*   **Navegação por Teclado:**
-    *   Permitir navegar nos cards usando as setas `Cima` e `Baixo` do teclado, e abrir os detalhes ao teclar `Enter`. Pressionar `Esc` deve limpar o campo de busca.
-*   **Destaque de Palavras-Chave (Search Highlighter):**
-    *   Quando o usuário digitar um termo de pesquisa, as ocorrências correspondentes no card e na área de leitura de detalhes devem ser destacadas visualmente com fundo amarelo (utilizando a tag HTML `<mark>`).
+
+*   ✅ **Filtros Rápidos por Categoria (Pill Tabs):**
+    *   Botões de filtro rápido abaixo do campo de busca permitem filtrar por `Feature`, `Announcement`, `Change`, `Issue` e `Breaking` com um único clique.
+
+*   ✅ **Navegação por Teclado:**
+    *   Navegue nos cards com as setas `↑` e `↓`, abra os detalhes com `Enter` e limpe o campo de busca com `Esc`.
+
+*   ✅ **Destaque de Palavras-Chave (Search Highlighter):**
+    *   As ocorrências do termo digitado são destacadas com fundo amarelo (`<mark>`) tanto nos cards da lista quanto no painel de detalhes, nos dois temas (claro e escuro).
 
 ### 2. 🎨 Feedback Visual & Animações
-*   **Componente de Toast Personalizado:**
-    *   Substituir os pop-ups nativos do navegador (`alert()`) por notificações de Toast flutuantes, elegantes e animadas, no canto inferior da tela (ex: "CSV exportado com sucesso!", "Erro de Conexão").
-*   **Preservação de Seleção ao Atualizar:**
-    *   Se o usuário estiver com um card aberto e clicar em "Atualizar", a aplicação deve comparar os IDs e manter a mesma nota de versão selecionada e destacada na tela se ela ainda existir na nova busca.
+
+*   ✅ **Componente de Toast Personalizado:**
+    *   Notificações flutuantes e animadas no canto inferior direito substituem todos os `alert()` nativos. Suportam os estados `success` (verde) e `error` (vermelho) com ícones e fade-out automático após 3 segundos.
+
+*   ✅ **Preservação de Seleção ao Atualizar:**
+    *   Ao clicar em "Atualizar", a aplicação compara os IDs e mantém o card que estava sendo lido ativo e visível na nova lista.
 
 ### 3. 🚨 Tratamento de Erros & Mensagens
-*   **Visualizador de Erros com Ação (Retry Button):**
-    *   Caso o backend falhe em obter o XML, exibir um estado vazio na tela inteira com uma ilustração amigável e um botão destacado "Tentar Novamente".
-*   **Dicas de Ajuda na Interface (Tooltips):**
-    *   Adicionar tooltips elegantes explicativos ao pairar o mouse sobre as tags e botões para que novos usuários compreendam as funcionalidades rapidamente.
+
+*   ✅ **Visualizador de Erros com Ação (Retry Button):**
+    *   Em caso de falha de conexão ou indisponibilidade do feed, a interface exibe um estado de erro amigável com ícone de aviso, mensagem clara e botão "Tentar Novamente" que re-executa a busca.
+
+*   ✅ **Dicas de Ajuda na Interface (Tooltips):**
+    *   Tooltips CSS puro e animados aparecem ao passar o cursor sobre os botões do cabeçalho, botão de expandir leitura, link de documentação e tags de categoria — com textos descritivos e suporte a ambos os temas.
 
 ### 4. 📖 Modo de Foco e Acessibilidade
-*   **Modo de Leitura Focada (Expand Reader):**
-    *   Adicionar um botão no visualizador de detalhes para "Maximizar/Minimizar" o painel de leitura, ocultando temporariamente a barra lateral esquerda de atualizações para permitir uma leitura limpa em tela cheia.
+
+*   ✅ **Modo de Leitura Focada (Expand Reader):**
+    *   Botão de maximizar/minimizar no painel de detalhes recolhe a coluna de lista lateral com transição animada, liberando 100% da largura para leitura focada.
+
+---
+
+> **Status: ✅ Todos os itens do roadmap foram implementados.**
