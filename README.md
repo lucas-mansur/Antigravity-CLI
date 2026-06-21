@@ -12,8 +12,8 @@ Este projeto foi construído usando **Python + Flask** no backend e uma interfac
 *   **Parsing:** Biblioteca nativa `xml.etree.ElementTree` do Python (processamento leve e rápido de XML).
 *   **Frontend:**
     *   **HTML5:** Estrutura semântica e acessível (SEO otimizado).
-    *   **Vanilla CSS:** Estilo personalizado com tema escuro imersivo, efeitos de glassmorphism e animações fluidas.
-    *   **Vanilla JavaScript:** Consumo assíncrono da API, renderização de cards em tempo real, filtros de pesquisa e compartilhamento direto no X (Twitter).
+    *   **Vanilla CSS:** Estilo personalizado com tema escuro imersivo, suporte nativo a **Modo Claro (Light Mode)** e animações fluidas de transição de tema.
+    *   **Vanilla JavaScript:** Consumo assíncrono da API, renderização de cards em tempo real, filtros de pesquisa, persistência de preferências de tema via **LocalStorage**, cópia de conteúdo estruturado e compartilhamento no X (Twitter).
     *   **Fontes e Ícones:** Google Fonts (Plus Jakarta Sans & Inter) e FontAwesome.
 
 ---
@@ -24,8 +24,8 @@ Este projeto foi construído usando **Python + Flask** no backend e uma interfac
 agy-cli-projects/
 ├── .venv/                 # Ambiente virtual do Python (ignorado pelo Git)
 ├── static/
-│   ├── app.js             # Lógica do frontend (requisições, busca e compartilhamento)
-│   └── style.css          # Design visual, tema escuro e responsividade
+│   ├── app.js             # Lógica do frontend (requisições, busca, temas, cópia e CSV)
+│   └── style.css          # Design visual, variáveis de temas e responsividade
 ├── templates/
 │   └── index.html         # Página única da aplicação
 ├── .gitignore             # Arquivos ignorados pelo Git
@@ -101,12 +101,7 @@ O ambiente virtual isola as dependências do projeto para evitar conflitos na su
 ### 3. Instalar as Dependências
 Com o ambiente virtual ativo, instale o Flask:
 ```bash
-pip install flask
-```
-
-*(Opcional) Gerar o arquivo de dependências:*
-```bash
-pip freeze > requirements.txt
+pip install -r requirements.txt
 ```
 
 ### 4. Iniciar o Servidor
@@ -127,7 +122,10 @@ Abra seu navegador e acesse:
 2.  **Visualizador com Skeleton Loading:** Transição suave com carregamento simulado enquanto os dados são obtidos da API.
 3.  **Filtro Inteligente:** Digite palavras-chave no campo de busca para pesquisar no título, na categoria ou no conteúdo dos lançamentos.
 4.  **Extração de Categorias:** A aplicação analisa o conteúdo XML e categoriza automaticamente as notas em tags visuais como `Feature`, `Announcement`, `Change`, `Issue` ou `Breaking`.
-5.  **Compartilhe no X (Twitter):** Selecione uma atualização, clique em "Compartilhar no X" e publique instantaneamente um tweet contendo o resumo e o link oficial da documentação.
+5.  **Cópia Rápida para a Área de Trabalho:** Botão dedicado em cada card que copia o texto limpo da nota (Data, Categorias, Links e Novidades) em formato estruturado, sem interferir na navegação do usuário e fornecendo feedback visual de sucesso ("Copiado!").
+6.  **Exportação para CSV:** Exporte com um clique toda a lista exibida no momento na tela (respeitando qualquer filtro de busca aplicado) para um arquivo CSV. Inclui codificação UTF-8 com BOM para compatibilidade imediata com caracteres especiais no Microsoft Excel.
+7.  **Alternador de Temas (Light / Dark Mode):** Botão de troca rápida no cabeçalho. As cores mudam por meio de transições suaves de CSS3 e a preferência do usuário é gravada de maneira persistente usando o `localStorage` do navegador.
+8.  **Compartilhe no X (Twitter):** Selecione uma atualização, clique em "Compartilhar no X" e publique instantaneamente um tweet contendo o resumo e o link oficial da documentação.
 
 ---
 
