@@ -31,6 +31,7 @@ agy-cli-projects/
 ├── .gitignore                    # Arquivos ignorados pelo Git
 ├── app.py                        # Arquivo principal do servidor Flask
 ├── code_review_devsecops.md      # Relatório de Code Review (Segurança, Performance, etc.)
+├── diario_do_projeto.md          # Passo a passo detalhado do desenvolvimento e refatorações
 ├── README.md                     # Documentação do projeto
 ├── requirements.txt              # Dependências do Python
 └── ux_roadmap.md                 # Roadmap de melhorias de UX (✅ concluído)
@@ -172,6 +173,14 @@ O projeto passou por uma **revisão completa de código** seguindo a metodologia
 > **12 achados** (1 crítica, 3 alta, 3 média, 2 baixa, 3 sugestão) — cada um com código refatorado pronto.
 
 📄 **Relatório completo:** [`code_review_devsecops.md`](code_review_devsecops.md)
+
+---
+
+## 📖 Diário do Projeto (Making Of)
+
+Acompanhe a documentação detalhada de como todo esse projeto foi idealizado e construído! O diário detalha a jornada do aplicativo, abordando a arquitetura **Backend-for-Frontend**, a implementação do motor inteligente de busca visual (`Search Highlighter`), e o detalhamento das vulnerabilidades (DevSecOps) encontradas e corrigidas na fase de polimento.
+
+📘 **Leia o diário de bordo:** [`diario_do_projeto.md`](diario_do_projeto.md)
 
 ---
 
