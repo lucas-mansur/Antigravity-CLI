@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Acompanhe as últimas notas de versão do BigQuery em tempo real com facilidade e compartilhe as principais novidades.">
+    <title>BigQuery Release Notes Tracker</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Estilos customizados -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Barra Lateral de Navegação Principal / Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-database"></i>
+                    <span class="pulse-dot"></span>
+                </div>
+                <div class="logo-text">
+                    <h1>BigQuery</h1>
+                    <p>Notas de Versão</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button id="btn-refresh" class="btn-primary" title="Atualizar Notas">
+                    <i class="fa-solid fa-arrows-rotate" id="refresh-icon"></i>
+                    <span>Atualizar</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Corpo Principal da Aplicação -->
+        <main class="app-main-content">
+            <!-- Coluna da Esquerda: Lista de Atualizações -->
+            <section class="list-section" aria-label="Lista de notas de versão">
+                <div class="section-header">
+                    <h2>Histórico de Atualizações</h2>
+                    <span id="releases-count" class="badge">0 notas</span>
+                </div>
+                
+                <div id="search-filter-bar" class="filter-bar">
+                    <div class="search-wrapper">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="input-search" placeholder="Filtrar por palavras-chave ou categorias..." autocomplete="off">
+                    </div>
+                </div>
+
+                <div id="releases-list" class="cards-container">
+                    <!-- Skeletons de Carregamento -->
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                </div>
+            </section>
+
+            <!-- Coluna da Direita: Visualizador de Detalhes -->
+            <section class="details-section" aria-label="Detalhes da atualização selecionada">
+                <div id="details-placeholder" class="details-placeholder-view">
+                    <div class="placeholder-icon">
+                        <i class="fa-solid fa-arrow-left-long"></i>
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <h3>Selecione uma atualização</h3>
+                    <p>Clique em qualquer nota de versão na lista ao lado para visualizar os detalhes completos, links oficiais e opções de compartilhamento.</p>
+                </div>
+
+                <article id="details-content" class="details-content-view hidden">
+                    <div class="details-header">
+                        <div class="details-meta">
+                            <span id="detail-date" class="detail-date-badge">Data</span>
+                            <a id="detail-original-link" href="#" target="_blank" rel="noopener noreferrer" class="external-link" title="Ver documentação oficial">
+                                Documentação Oficial <i class="fa-solid fa-up-right-from-square"></i>
+                            </a>
+                        </div>
+                        <h2 id="detail-title" class="detail-title-text">Título da Nota</h2>
+                    </div>
+
+                    <div id="detail-body" class="detail-body-content">
+                        <!-- O conteúdo do release (HTML) será inserido dinamicamente aqui -->
+                    </div>
+
+                    <div class="details-footer">
+                        <div class="share-box">
+                            <span>Gostou dessa novidade? Compartilhe:</span>
+                            <button id="btn-share-twitter" class="btn-share" title="Compartilhar no X (Twitter)">
+                                <i class="fa-brands fa-x-twitter"></i>
+                                Compartilhar no X
+                            </button>
+                        </div>
+                    </div>
+                </article>
+            </section>
+        </main>
+    </div>
+
+    <!-- Script principal da aplicação -->
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
