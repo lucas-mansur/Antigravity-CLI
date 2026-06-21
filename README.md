@@ -31,7 +31,38 @@ agy-cli-projects/
 ├── .gitignore             # Arquivos ignorados pelo Git
 ├── app.py                 # Arquivo principal do servidor Flask
 ├── README.md              # Documentação do projeto
-└── requirements.txt       # Dependências do Python (criado automaticamente)
+└── requirements.txt       # Dependências do Python
+```
+
+---
+
+## 🔄 Ciclo de Vida da Requisição (Fluxo Request-Response)
+
+Aqui está uma representação gráfica de como os dados trafegam pela aplicação quando uma atualização é solicitada:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Usuario as Usuário
+    participant Navegador as Navegador (HTML/JS)
+    participant Flask as Servidor Flask (app.py)
+    participant Google as Google Cloud Feed (XML)
+
+    Usuario->>Navegador: Clica no botão "Atualizar"
+    Note over Navegador: Botão entra em 'loading' (spin)<br/>Skeletons são exibidos na lista.
+    
+    Navegador->>Flask: Chamada assíncrona GET /api/releases
+    
+    Note over Flask: Servidor recebe a chamada e dispara<br/>o request HTTPS para o Google Cloud.
+    Flask->>Google: GET https://docs.cloud.google.com/feeds/bigquery-release-notes.xml
+    Google-->>Flask: Retorna o arquivo XML bruto
+    
+    Note over Flask: Parser processa a árvore XML de Atom,<br/>extrai as tags e converte tudo em JSON.
+    
+    Flask-->>Navegador: Retorna JSON (status: success, data: [...])
+    
+    Note over Navegador: Processa o JSON, remove os skeletons,<br/>renderiza os cards e seleciona o primeiro.
+    Navegador-->>Usuario: Apresenta a interface populada e os detalhes da nota
 ```
 
 ---
