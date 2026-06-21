@@ -579,6 +579,12 @@ body {
 /* ==========================================================================
    Estilos de Botões e Elementos Interativos
    ========================================================================== */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
 .btn-primary {
     background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
     border: none;
@@ -619,6 +625,32 @@ body {
     to { transform: rotate(360deg); }
 }
 
+.btn-secondary {
+    background-color: var(--bg-tertiary);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--border-radius-md);
+    color: var(--text-primary);
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 10px 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition-normal);
+}
+
+.btn-secondary:hover {
+    background-color: var(--bg-secondary);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+    transform: translateY(1px);
+}
+
 .btn-share {
     background-color: #ffffff;
     color: #000000;
@@ -643,6 +675,43 @@ body {
 
 .btn-share i {
     font-size: 0.95rem;
+}
+
+/* Cópia rápida no Card */
+.card-tags-area {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-copy-card {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    opacity: 0.3;
+    transition: var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.release-card:hover .btn-copy-card {
+    opacity: 1;
+}
+
+.btn-copy-card:hover {
+    color: var(--accent-blue);
+    background-color: rgba(255, 255, 255, 0.06);
+    transform: scale(1.1);
+}
+
+.btn-copy-card.copied {
+    color: var(--color-feature) !important;
+    opacity: 1 !important;
 }
 
 /* ==========================================================================

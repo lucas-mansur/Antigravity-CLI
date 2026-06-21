@@ -1,10 +1,12 @@
 // Estado global da aplicação
 let allReleases = [];
+let filteredReleases = []; // Guarda a lista que está sendo exibida no momento
 let selectedRelease = null;
 
 // Elementos do DOM
 const btnRefresh = document.getElementById('btn-refresh');
 const refreshIcon = document.getElementById('refresh-icon');
+const btnExportCsv = document.getElementById('btn-export-csv');
 const inputSearch = document.getElementById('input-search');
 const releasesList = document.getElementById('releases-list');
 const countBadge = document.getElementById('releases-count');
@@ -24,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Event listeners
     btnRefresh.addEventListener('click', fetchReleases);
+    btnExportCsv.addEventListener('click', exportToCsv);
     inputSearch.addEventListener('input', handleSearch);
     btnShareTwitter.addEventListener('click', shareOnTwitter);
 });
@@ -40,12 +43,13 @@ async function fetchReleases() {
         
         if (result.status === 'success') {
             allReleases = result.data;
-            renderReleases(allReleases);
+            filteredReleases = [...allReleases]; // Inicializa a lista filtrada com todos
+            renderReleases(filteredReleases);
             
             // Seleciona automaticamente o primeiro lançamento por padrão
-            if (allReleases.length > 0) {
+            if (filteredReleases.length > 0) {
                 const firstCard = releasesList.querySelector('.release-card');
-                selectRelease(allReleases[0], firstCard);
+                selectRelease(filteredReleases[0], firstCard);
             } else {
                 showEmptyState("Nenhuma nota de versão encontrada.");
             }
@@ -65,6 +69,7 @@ function setLoadingState(isLoading) {
     if (isLoading) {
         btnRefresh.classList.add('loading');
         btnRefresh.disabled = true;
+        btnExportCsv.disabled = true;
         
         // Exibe skeletons na lista
         releasesList.innerHTML = `
@@ -75,6 +80,7 @@ function setLoadingState(isLoading) {
     } else {
         btnRefresh.classList.remove('loading');
         btnRefresh.disabled = false;
+        btnExportCsv.disabled = false;
     }
 }
 
@@ -112,14 +118,100 @@ function renderReleases(releases) {
         card.innerHTML = `
             <div class="card-header">
                 <span class="card-date">${release.title}</span>
-                <div class="card-tags">${tagsHtml}</div>
+                <div class="card-tags-area">
+                    <div class="card-tags">${tagsHtml}</div>
+                    <button class="btn-copy-card" title="Copiar conteúdo da nota" data-id="${release.id}">
+                        <i class="fa-regular fa-copy"></i>
+                    </button>
+                </div>
             </div>
             <div class="card-preview">${cleanText}</div>
         `;
 
+        // Lógica de cópia no clique do botão de cópia do card
+        const btnCopy = card.querySelector('.btn-copy-card');
+        btnCopy.addEventListener('click', (event) => {
+            event.stopPropagation(); // Evita selecionar o card
+            copyCardToClipboard(release, btnCopy);
+        });
+
+        // Clique no card abre os detalhes
         card.addEventListener('click', () => selectRelease(release, card));
         releasesList.appendChild(card);
     });
+}
+
+// Copia o conteúdo limpo do card para a área de transferência com animação de feedback
+async function copyCardToClipboard(release, btnElement) {
+    try {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = release.content;
+        const cleanText = tempDiv.textContent || tempDiv.innerText || '';
+        const tags = detectTags(release.content).join(', ');
+        
+        const formattedText = `BigQuery Release Note - ${release.title}\n` +
+                              `Categorias: ${tags}\n` +
+                              `Link Oficial: ${release.link || 'N/A'}\n\n` +
+                              `Novidade:\n${cleanText}`;
+
+        await navigator.clipboard.writeText(formattedText);
+        
+        // Efeito visual de sucesso
+        btnElement.classList.add('copied');
+        const icon = btnElement.querySelector('i');
+        icon.className = 'fa-solid fa-check';
+        btnElement.setAttribute('title', 'Copiado!');
+        
+        // Reseta o estado após 1.5s
+        setTimeout(() => {
+            btnElement.classList.remove('copied');
+            icon.className = 'fa-regular fa-copy';
+            btnElement.setAttribute('title', 'Copiar conteúdo da nota');
+        }, 1500);
+        
+    } catch (err) {
+        console.error('Falha ao copiar:', err);
+        alert('Não foi possível copiar o conteúdo para a área de transferência.');
+    }
+}
+
+// Exporta as notas de versão exibidas no momento na tela para arquivo CSV
+function exportToCsv() {
+    if (filteredReleases.length === 0) {
+        alert("Não há notas de versão para exportar.");
+        return;
+    }
+
+    // Estrutura do cabeçalho
+    let csvContent = "\uFEFF"; // Byte Order Mark (BOM) para o Excel ler caracteres acentuados corretamente em UTF-8
+    csvContent += '"Data","Link","Categorias","Conteudo"\r\n';
+
+    filteredReleases.forEach(release => {
+        const data = release.title.replace(/"/g, '""'); // Escape de aspas duplas no CSV
+        const link = (release.link || '').replace(/"/g, '""');
+        const categorias = detectTags(release.content).join(', ').replace(/"/g, '""');
+        
+        // Remove tags HTML para colocar texto limpo no CSV
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = release.content;
+        const textoLimpo = (tempDiv.textContent || tempDiv.innerText || '').trim();
+        const conteudo = textoLimpo.replace(/"/g, '""');
+
+        csvContent += `"${data}","${link}","${categorias}","${conteudo}"\r\n`;
+    });
+
+    // Cria o download do arquivo
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const downloadLink = document.createElement("a");
+    const dataAtual = new Date().toISOString().split('T')[0];
+    
+    downloadLink.setAttribute("href", url);
+    downloadLink.setAttribute("download", `bigquery_release_notes_${dataAtual}.csv`);
+    downloadLink.style.visibility = 'hidden';
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
 }
 
 // Detecta palavras-chave/categorias baseadas nas tags do BigQuery
@@ -185,11 +277,12 @@ function handleSearch(event) {
     const query = event.target.value.toLowerCase().trim();
     
     if (!query) {
-        renderReleases(allReleases);
+        filteredReleases = [...allReleases];
+        renderReleases(filteredReleases);
         return;
     }
 
-    const filtered = allReleases.filter(release => {
+    filteredReleases = allReleases.filter(release => {
         const titleMatch = release.title.toLowerCase().includes(query);
         const tags = detectTags(release.content).join(' ').toLowerCase();
         const tagMatch = tags.includes(query);
@@ -203,7 +296,7 @@ function handleSearch(event) {
         return titleMatch || tagMatch || contentMatch;
     });
 
-    renderReleases(filtered);
+    renderReleases(filteredReleases);
 }
 
 // Compartilha a nota de versão ativa no X (Twitter)
