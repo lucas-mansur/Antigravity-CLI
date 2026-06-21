@@ -277,7 +277,7 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.04);
     transition: var(--transition-normal);
     position: relative;
-    overflow: hidden;
+    /* overflow: hidden removido — impedia exibição de tooltips */
 }
 
 .release-card:hover {
@@ -325,19 +325,28 @@ body {
 }
 
 .tag {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     text-transform: uppercase;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    padding: 2px 6px;
-    border-radius: 4px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    padding: 3px 8px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    cursor: default;
+    transition: filter 0.15s ease, transform 0.15s ease;
+    user-select: none;
 }
 
-.tag.feature { background-color: rgba(16, 185, 129, 0.15); color: var(--color-feature); }
-.tag.announcement { background-color: rgba(59, 130, 246, 0.15); color: var(--color-announcement); }
-.tag.change { background-color: rgba(245, 158, 11, 0.15); color: var(--color-change); }
-.tag.issue { background-color: rgba(239, 68, 68, 0.15); color: var(--color-issue); }
-.tag.breaking { background-color: rgba(217, 119, 6, 0.15); color: var(--color-breaking); }
+.tag:hover {
+    filter: brightness(1.25);
+    transform: scale(1.05);
+}
+
+.tag.feature      { background-color: rgba(16, 185, 129, 0.18); color: var(--color-feature);      border-color: rgba(16, 185, 129, 0.35); }
+.tag.announcement { background-color: rgba(59, 130, 246, 0.18); color: var(--color-announcement); border-color: rgba(59, 130, 246, 0.35); }
+.tag.change       { background-color: rgba(245, 158, 11, 0.18); color: var(--color-change);       border-color: rgba(245, 158, 11, 0.35); }
+.tag.issue        { background-color: rgba(239, 68, 68, 0.18);  color: var(--color-issue);        border-color: rgba(239, 68, 68, 0.35); }
+.tag.breaking     { background-color: rgba(217, 119, 6, 0.18);  color: var(--color-breaking);     border-color: rgba(217, 119, 6, 0.40); }
 
 .card-preview {
     font-size: 0.8rem;
@@ -1182,19 +1191,63 @@ body.light-theme mark.search-highlight {
 }
 
 /* ==========================================================================
-   Tooltips Personalizados
+   Tooltip Global via JS (#js-tooltip)
+   Posicionado com position:fixed no <body> — nunca clipado por overflow:hidden
    ========================================================================== */
-[data-tooltip] {
+#js-tooltip {
+    position: fixed;
+    z-index: 9999;
+    pointer-events: none;
+    background-color: rgba(17, 24, 39, 0.96);
+    color: #f3f4f6;
+    font-size: 0.72rem;
+    font-family: var(--font-body);
+    font-weight: 500;
+    white-space: nowrap;
+    padding: 6px 12px;
+    border-radius: 7px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    /* seta inferior */
+}
+
+#js-tooltip.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#js-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: rgba(17, 24, 39, 0.96);
+}
+
+body.light-theme #js-tooltip {
+    background-color: rgba(31, 41, 55, 0.97);
+}
+
+body.light-theme #js-tooltip::after {
+    border-top-color: rgba(31, 41, 55, 0.97);
+}
+
+/* Botões do cabeçalho mantêm tooltip CSS pois não têm overflow:hidden pai */
+[data-tooltip]:not(.tag):not(.btn-copy-card) {
     position: relative;
 }
 
-[data-tooltip]::after {
+[data-tooltip]:not(.tag):not(.btn-copy-card)::after {
     content: attr(data-tooltip);
     position: absolute;
     bottom: calc(100% + 8px);
     left: 50%;
     transform: translateX(-50%) scale(0.9);
-    background-color: rgba(17, 24, 39, 0.95);
+    background-color: rgba(17, 24, 39, 0.96);
     color: #f3f4f6;
     font-size: 0.72rem;
     font-weight: 500;
@@ -1204,35 +1257,34 @@ body.light-theme mark.search-highlight {
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.18s ease, transform 0.18s ease;
-    z-index: 100;
+    z-index: 9998;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
-[data-tooltip]::before {
+[data-tooltip]:not(.tag):not(.btn-copy-card)::before {
     content: '';
     position: absolute;
     bottom: calc(100% + 2px);
     left: 50%;
     transform: translateX(-50%);
     border: 5px solid transparent;
-    border-top-color: rgba(17, 24, 39, 0.95);
+    border-top-color: rgba(17, 24, 39, 0.96);
     pointer-events: none;
     opacity: 0;
     transition: opacity 0.18s ease;
-    z-index: 100;
+    z-index: 9998;
 }
 
-[data-tooltip]:hover::after,
-[data-tooltip]:hover::before {
+[data-tooltip]:not(.tag):not(.btn-copy-card):hover::after,
+[data-tooltip]:not(.tag):not(.btn-copy-card):hover::before {
     opacity: 1;
     transform: translateX(-50%) scale(1);
 }
 
-body.light-theme [data-tooltip]::after {
+body.light-theme [data-tooltip]:not(.tag):not(.btn-copy-card)::after {
     background-color: rgba(31, 41, 55, 0.97);
 }
 
-body.light-theme [data-tooltip]::before {
+body.light-theme [data-tooltip]:not(.tag):not(.btn-copy-card)::before {
     border-top-color: rgba(31, 41, 55, 0.97);
 }
-

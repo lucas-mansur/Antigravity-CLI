@@ -46,7 +46,65 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 5. Navegação por Teclado
     document.addEventListener('keydown', handleKeyboardNavigation);
+
+    // Tooltip global via JS (funciona dentro de overflow:hidden)
+    setupJsTooltip();
 });
+
+// ============================================================
+// TOOLTIP GLOBAL (position:fixed — nunca clipado por overflow)
+// ============================================================
+function setupJsTooltip() {
+    const tip = document.getElementById('js-tooltip');
+    let hideTimer;
+
+    document.addEventListener('mouseover', e => {
+        const target = e.target.closest('[data-tooltip].tag, [data-tooltip].btn-copy-card');
+        if (!target) return;
+
+        clearTimeout(hideTimer);
+        const text = target.getAttribute('data-tooltip');
+        if (!text) return;
+
+        tip.textContent = text;
+        tip.classList.add('visible');
+        positionTooltip(tip, target);
+    });
+
+    document.addEventListener('mousemove', e => {
+        const target = e.target.closest('[data-tooltip].tag, [data-tooltip].btn-copy-card');
+        if (!target) return;
+        positionTooltip(tip, target);
+    });
+
+    document.addEventListener('mouseout', e => {
+        const target = e.target.closest('[data-tooltip].tag, [data-tooltip].btn-copy-card');
+        if (!target) return;
+        hideTimer = setTimeout(() => tip.classList.remove('visible'), 80);
+    });
+}
+
+function positionTooltip(tip, target) {
+    const rect = target.getBoundingClientRect();
+    const tipRect = tip.getBoundingClientRect();
+    const OFFSET = 10; // espaço entre elemento e tooltip
+
+    let top = rect.top - tipRect.height - OFFSET;
+    let left = rect.left + rect.width / 2 - tipRect.width / 2;
+
+    // Garante que não sai da viewport horizontalmente
+    const margin = 8;
+    if (left < margin) left = margin;
+    if (left + tipRect.width > window.innerWidth - margin) {
+        left = window.innerWidth - tipRect.width - margin;
+    }
+    // Se não couber em cima, aparece abaixo
+    if (top < margin) top = rect.bottom + OFFSET;
+
+    tip.style.top = `${top}px`;
+    tip.style.left = `${left}px`;
+}
+
 
 // ============================================================
 // 1. TEMA (Light / Dark)
